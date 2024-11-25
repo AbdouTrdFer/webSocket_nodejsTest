@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <input type="text" id="messageInput" placeholder="Enter your message">
+    <button onclick="sendMessage()">Send Message</button>
+    <div id="messages"></div>
+
+    <script>
+        const messagesDiv = document.getElementById("messages");
+        const messageInput = document.getElementById("messageInput");
+
+        // Connect to WebSocket server
+        const socket = new WebSocket("ws://localhost:3000");
+
+        socket.onopen = function() {
+            messagesDiv.innerHTML += "<p>Connected to the WebSocket server.</p>";
+        };
+
+        socket.onmessage = function(event) {
+            messagesDiv.innerHTML += "<p>Server: " + event.data + "</p>";
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = function() {
+            messagesDiv.innerHTML += "<p>Disconnected from WebSocket server.</p>";
+        };
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message.toLowerCase() === "close") {
+                    socket.close(); // Fermer la connexion si le message est "close"
+                    messagesDiv.innerHTML += "<p>Connection closed by client.</p>";
+                } 
+            else {
+                socket.send(message);
+                messagesDiv.innerHTML += "<p>You: " + message + "</p>";
+                
+            }
+            messageInput.value = "";
+        }
+    </script>
+</body>
+</html>
